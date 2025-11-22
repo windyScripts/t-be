@@ -8,6 +8,7 @@ import {
 } from "sequelize";
 import User from "./User.js";
 import ShowTicket from "./ShowTicket.js";
+import { BookingStatus } from "../enums.js";
 
 // User(ShowTicket) bridge: links a user to a specific show-ticket allocation.
 class Booking extends Model<
@@ -18,6 +19,7 @@ class Booking extends Model<
   declare userId: number;
   declare showTicketId: number;
   declare quantity: number;
+  declare status: BookingStatus;
 }
 
 Booking.init(
@@ -36,6 +38,11 @@ Booking.init(
       onDelete: "CASCADE",
     },
     quantity: { type: DataTypes.INTEGER, allowNull: false },
+    status: {
+      type: DataTypes.ENUM(...Object.values(BookingStatus)),
+      allowNull: false,
+      defaultValue: BookingStatus.Pending,
+    },
   },
   {
     sequelize,

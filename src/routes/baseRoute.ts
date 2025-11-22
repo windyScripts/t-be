@@ -4,7 +4,7 @@ const router: Router = express.Router()
 
 
 router.get('/', (req: Request, res:Response ) => {
-  res.send(`Hey, the server is running! :)`)
+  res.send(`The server is currently active.`)
 })
 
 export default router

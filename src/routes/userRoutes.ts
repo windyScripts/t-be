@@ -12,6 +12,10 @@ const router: Router = express.Router()
 // User registration
  router.post('/register', async (req, res) => {
  try {
+ const existing = await User.findOne({ where: { email: req.body?.email } })
+ if (existing) {
+   return res.status(400).json({ message: "Registration failed: User already exists" })
+ }
  const { name, email, password } = req.body;
  const hashedPassword = await bcrypt.hash(password, 10);
  const user = await User.create({ name, email, password: hashedPassword });
@@ -31,8 +35,12 @@ const router: Router = express.Router()
 
 // User login
  router.post('/login', async (req, res) => {
+
  try {
- const { email, password } = req.body;
+ const { email, password } = req.body ?? {};
+ if (typeof email !== "string" || typeof password !== "string") {
+   return res.status(400).json({ error: "Invalid credentials" });
+ }
  const user = await User.findOne({where:{email:email}});
  if (!user) {
  return res.status(401).json({ error: 'Authentication failed' });
@@ -41,7 +49,7 @@ const router: Router = express.Router()
  if (!passwordMatch) {
  return res.status(401).json({ error: 'Authentication failed' });
  }
- const token = jwt.sign({ userId: user.id }, 'your-secret-key', {
+ const token = jwt.sign({ userEmail: user.email }, 'your-secret-key', {
  expiresIn: '1h',
  });
  res.status(200).json({ token });

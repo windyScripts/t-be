@@ -1,7 +1,7 @@
 import { Request } from "express"
 
 type userPayload = {
-    userId: string;
+    userEmail?: string;
 }
 
 export type customRequest = Request & userPayload

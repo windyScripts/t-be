@@ -25,3 +25,9 @@ export enum PaymentStatus {
   Success = "success",
   Failed = "failed",
 }
+
+export enum BookingStatus {
+  Pending = "pending",
+  Paid = "paid",
+  Failed = "failed",
+}

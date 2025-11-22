@@ -45,3 +45,6 @@ a ticket is associated with a user, a show and a booking. A booking belongs to a
 is a booking a user(ShowTicket)
 
 A payment has an id, a status and a bookingId
+
+When you create a show, you also create two showTickets, one for regular and one for priority. When you create a booking, you reduce the number of tickets available in each showTicket, as long as the number of remaining tickets is greater than the booking requirement
+
