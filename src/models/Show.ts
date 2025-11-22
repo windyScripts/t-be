@@ -12,6 +12,7 @@ class Show extends Model<
   InferCreationAttributes<Show>
 > {
   declare id: CreationOptional<number>;
+  declare name: string;
   declare startTime: Date;
   declare endTime: Date;
 }
@@ -19,6 +20,7 @@ class Show extends Model<
 Show.init(
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    name: { type: DataTypes.STRING, allowNull: false },
     startTime: { type: DataTypes.DATE, allowNull: false },
     endTime: { type: DataTypes.DATE, allowNull: false },
   },

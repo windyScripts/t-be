@@ -3,9 +3,10 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 import User from "../models/User.js"
-import RoleModel from "../models/Role.js"
 import UserRole from "../models/UserRole.js"
 import { Role, RoleDescription } from '../enums.js'
+import RoleModel from "../models/Role.js"
+import { Includeable } from "sequelize"
 
 const router: Router = express.Router()
 
@@ -52,7 +53,17 @@ const router: Router = express.Router()
  const token = jwt.sign({ userEmail: user.email }, 'your-secret-key', {
  expiresIn: '1h',
  });
- res.status(200).json({ token });
+ const userRole = await UserRole.findOne({
+   where: { userId: user.id },
+   include: [{ model: RoleModel, as: "role" } as Includeable],
+ });
+ const roleValue = (userRole as any)?.role?.role ?? Role.User;
+ res.status(200).json({
+   message: "Login successful",
+   token,
+   role: roleValue,
+   user: { name: user.name, email: user.email },
+ });
  } catch (error) {
     console.log(error)
     res.status(500).json({ error: 'Login failed' });

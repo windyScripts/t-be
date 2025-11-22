@@ -9,7 +9,7 @@ import Show from "../models/Show.js"
 import ShowTicket from "../models/ShowTicket.js"
 import Ticket from "../models/Ticket.js"
 import { Role, RoleDescription } from '../enums.js'
-import { customRequest } from '../types.js'
+import { customRequest, ticket } from '../types.js'
 import { verifyToken } from "../middleware/authMiddleware.js"
 import { ensureAdminOrOwner } from '../util.js'
 
@@ -141,7 +141,11 @@ router.post('/createShow', verifyToken, async (req: Request, res:Response ) => {
   const authOk = await ensureAdminOrOwner(req as customRequest, res)
   if (!authOk) return
 
-  const { startTime, endTime, tickets } = req.body ?? {}
+ const { name, startTime, endTime, tickets } = req.body ?? {}
+
+  if (typeof name !== "string" || name.trim().length === 0) {
+    return res.status(400).json({ message: "Invalid name" })
+  }
 
   const start = new Date(startTime)
   const end = new Date(endTime)
@@ -167,18 +171,18 @@ router.post('/createShow', verifyToken, async (req: Request, res:Response ) => {
   }
 
   try {
-    const show = await Show.create({ startTime: start, endTime: end })
+   const show = await Show.create({ name, startTime: start, endTime: end })
 
     if (Array.isArray(tickets) && tickets.length > 0) {
       // Optionally verify referenced tickets exist
-      const ticketIds = tickets.map((t: any) => t.ticketId)
+      const ticketIds = tickets.map((t: ticket) => t.ticketId)
       const foundTickets = await Ticket.findAll({ where: { id: ticketIds } })
       if (foundTickets.length !== tickets.length) {
         return res.status(400).json({ message: "One or more ticketIds are invalid" })
       }
 
       await Promise.all(
-        tickets.map((t: any) =>
+        tickets.map((t: ticket) =>
           ShowTicket.create({
             showId: show.id,
             ticketId: t.ticketId,
@@ -188,10 +192,10 @@ router.post('/createShow', verifyToken, async (req: Request, res:Response ) => {
       )
     }
 
-    res.status(201).json({ message: "Show created successfully", showId: show.id })
+    res.status(201).json({ message: "Safari created successfully", showName: show.name })
   } catch (error) {
     console.error(error)
-    res.status(500).json({ message: "Show creation failed" })
+    res.status(500).json({ message: "Safari creation failed" })
   }
 })
  

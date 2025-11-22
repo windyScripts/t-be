@@ -3,6 +3,7 @@ import { Op } from "sequelize"
 import Show from "../models/Show.js"
 import ShowTicket from "../models/ShowTicket.js"
 import Ticket from "../models/Ticket.js"
+import { ShowWithTickets } from '../types.js'
 
 const router: Router = express.Router()
 
@@ -43,7 +44,7 @@ router.get('/safari-timings', async (req: Request, res:Response ) => {
     })
 
     const data = shows.map((show) => {
-      const tickets = (show as any).showTickets?.map((st: any) => ({
+      const tickets = (show as ShowWithTickets).showTickets?.map((st) => ({
         showTicketId: st.id,
         ticketId: st.ticketId,
         ticketKind: st.ticket?.kind,
