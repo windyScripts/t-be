@@ -3,8 +3,7 @@ import routes from "./routes/index.js"
 import "./models/associations.js"
 
 import { sequelize } from "./sequelize.js"
-import Ticket from "./models/Ticket.js"
-import { TicketCost, TicketType } from "./enums.js"
+import { seedData } from "./seedData.js"
 
 const app = express()
 
@@ -31,17 +30,6 @@ app.use(routes)
 app.listen(PORT, async () => {
   const shouldAlter = process.env.NODE_ENV === "development"
   await sequelize.sync(shouldAlter ? { alter: true } : undefined)
-  await seedTickets()
+  await seedData()
   console.log(`Server running on port:${PORT}`)
 })
-
-async function seedTickets() {
-  await Ticket.findOrCreate({
-    where: { kind: TicketType.Regular },
-    defaults: { kind: TicketType.Regular, price: TicketCost.Regular },
-  })
-  await Ticket.findOrCreate({
-    where: { kind: TicketType.Priority },
-    defaults: { kind: TicketType.Priority, price: TicketCost.Priority },
-  })
-}
